@@ -1,0 +1,28 @@
+
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+   Bidding Page
+{% endblock %}
+
+
+
+{% block body %}
+
+    <h1>TRY</h1>
+{{ user.username }} {{ title }}
+
+ <div>
+    <h2>Starting price {{ max_bid }}</h2>
+    <form method="post" action="{% url 'addbid' title %}" name="q" style="width: 75%" >
+    {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+      {{ form.as_p }}
+    <button type="submit" class="btn btn-primary" name="save">Place a bid</button>
+    </form>
+{% endblock %}
+

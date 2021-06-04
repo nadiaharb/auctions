@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Watchlist
+{% endblock %}
+
+{% block body %}
+
+    <h1>this is watchlist {{ username }}</h1>
+    {% for item in items %}
+        <li><a href="/home/{{ item.product.title }}">{{ item.product.title }}{{ item.product.image }}{{ item.product.bid }}</a> </li><button value="submit"><a href="/remove/{{item}}"> Remove</a></button>
+    {% endfor %}
+    <span>You have {{ watchlist.get_items }} products in your watchlist</span>
+{% endblock %}

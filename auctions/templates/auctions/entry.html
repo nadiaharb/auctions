@@ -1,0 +1,94 @@
+
+<{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block title %}
+    title
+{% endblock %}
+
+{% block body %}
+current user:{{ user.username }}
+
+
+created_by:{{ item.created_by.username }}
+
+
+    {% if messages %}
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+{{ item.title }}
+    </br>
+    {% if item.image %}
+    <img src="{{ item.image }}">
+    {% else %}
+    <img src="{% static 'images/No-image-available.png' %}">
+    {% endif %}
+
+    </br>
+{{ item.description }}
+{{ item.bid }}
+    {{ item.category }}
+
+    {{ item.created_by.username }}
+    {% if item.openbid is True %}
+    <button value="submit" name="add to watchlist"><a href="/add/{{ item.title}}">Add to watchlist</a></button>
+
+     {% if user.username == item.created_by.username %}
+    <button value="submit" name="edit"><a href="/edit/{{ item.title}}">Edit</a></button>
+     <button value="submit" name="edit"><a href="/closebid/{{ item.title }}" >Close bid</a></button>
+
+     {% endif %}
+    {% if bids %}
+    {% for bid in bids %}
+       <li>{{ bid.user.username }}  {{ bid.bid_time }}  {{ bid.bidValue }}</li>
+    {% endfor %}
+
+    <h1>THE MAX BID is {{ max_bid }}</h1>
+    {% else %}
+        <h1>No bids yet</h1>
+    {% endif %}
+    <button value="submit" name="place bid"><a href="/addbid/{{ item.title}}">Place bid</a></button>
+
+
+
+<hr>
+    {% else %}
+      {% if user.username == maxuser %}
+         <h1>YOU WON WITH THE BID OF {{ max_bid }}!!!!</h1>
+          {% else %}
+          <h1>{{ maxuser }} won with a bid of {{ max_bid }}!</h1>
+    {% endif %}
+    {% if messages %}
+    {% for i in messages %}
+    <div role="alert"><strong>{{ i }}</strong></div>
+    {% endfor %}
+    {% endif %}
+ {% endif %}
+    </br><hr> {{ user.username }}    {{ maxuser }}
+
+    <h2>Comments</h2>
+    <hr></br>
+    {% if not comm %}
+        No comments.. <a href="{% url 'addcomment' item.title %}">Add one</a>
+        {% else %}
+        <a href="/addcomment/{{ item.title }}">Add Comment</a>
+        <br/></br>
+        {% for comment in comm %}
+        <strong>
+        {{ comment.title }} -
+        {{ comment.date_added }}
+          </br>
+        added by {{ user.username }}
+        </strong>
+        </br>
+        {{comment.body }}
+              <hr>
+        </br></br>
+        {% endfor %}
+
+
+
+    {% endif %}
+{% endblock %}>

@@ -1,0 +1,36 @@
+
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+   Categories
+{% endblock %}
+
+
+
+{% block body %}
+{%if categories%}
+<h1>Please choose category</h1>
+{%for category in categories%}
+
+<li> <a href="{% url 'category' category%}">{{category}}</a></li>
+{%endfor%}
+
+{%endif%}
+{%if items%}
+ <h2>Products in {{title}}</h2>
+  {%for item in items%}
+  <li><a href="/home/{{item.title }}">{{ item.title }}{{ item.bid }}</a> </li>
+  {%endfor%}
+  {%else%}
+  Sorry, no products in  {{title}}
+    You can add one <a href="{% url 'create' %}">here</a>
+  {%endif%}
+
+
+
+
+{% endblock %}
+
+
+
+

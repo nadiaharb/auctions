@@ -1,0 +1,30 @@
+
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+   Update listing
+{% endblock %}
+
+
+
+{% block body %}
+ {% if user.username == item.created_by.username %}
+<h1>You Can Update  Listing Here  {{ user.username }} {{  item.created_by.username}}</h1>
+    <div>
+    <form method="post" action="{% url 'edit' title %}" name="q" style="width: 75%" >
+    {% csrf_token %}
+      {{ form.as_p }}
+    <button type="submit" class="btn btn-primary" name="save">Update</button>
+    </form>
+
+    </div>
+    {% else %}
+    GET TF OUT
+    {% endif %}
+
+
+{% endblock %}
+
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block title %}
+   Active Listings
+{% endblock %}
+
+
+
+{% block body %}
+<h1>Active Listings</h1>
+    {% for product in products %}
+        <li>
+
+            {% if product.image %}
+            <img src="{{ product.image }}" style="width: 150px; height: 150px">
+            {% else %}
+                <img src="{% static 'images/No-image-available.png' %}" style="width: 150px; height: 150px">
+            {% endif %}
+            <a href="/home/{{ product }}">{{ product.title }} €{{ max_bid }}{{ product.description }}</a>
+
+
+
+        </li>
+
+
+     {% endfor %}
+    </br></br>
+    <h3><a href="{% url 'categories' %}">Choose by category</a></h3>
+{% endblock %}
+
+
+

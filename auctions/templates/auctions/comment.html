@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+   Add Comment
+{% endblock %}
+
+
+
+{% block body %}
+
+<h1>You Can Add  Comment Here  {{ user.username }}</h1>
+    <div>
+    <form method="post" action="{% url 'addcomment' title %}" name="q" style="width: 75%" >
+    {% csrf_token %}
+      {{ form.as_p }}
+    <button type="submit" class="btn btn-primary" name="save">Add Comment</button>
+    </form>
+
+    </div>
+
+
+
+{% endblock %}
+
+
+</body>
+</html>
