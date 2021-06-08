@@ -9,16 +9,16 @@
 
 {% block body %}
 
-    <h1>TRY</h1>
-{{ user.username }} {{ title }}
+    <h1 class="head" style="color:black;">You can add a Bid for {{ title }} here</h1><hr>
+
 
  <div>
-    <h2>Starting price {{ max_bid }}</h2>
-    <form method="post" action="{% url 'addbid' title %}" name="q" style="width: 75%" >
+
+    <form method="post" action="{% url 'addbid' title %}" name="q" style="width: 75%; margin-top:50px;" >
     {% csrf_token %}
         {% if messages %}
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <li class="alert alert-danger" role="alert">{{ message }}</li>
             {% endfor %}
         {% endif %}
       {{ form.as_p }}

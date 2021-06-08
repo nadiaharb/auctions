@@ -1,6 +1,7 @@
 
-{% extends "auctions/layout.html" %}
 
+{% extends "auctions/layout.html" %}
+{% load static %}
 {% block title %}
    Categories
 {% endblock %}
@@ -8,27 +9,65 @@
 
 
 {% block body %}
-{%if categories%}
-<h1>Please choose category</h1>
+{%if items is None%}
+<div style=" height:600px; width: 1650px; padding-left:50px; background-image:url('https://www.bsf.lv/userfiles/images/galerija/idejas_ziedotajiem/why-auction-software-must-have.jpg')">
+
+    {%if categories%}
+<h1 style="font-family: Arial,sans-serif;font-size: 60px;">All Categories</h1>
+<hr>
 {%for category in categories%}
 
 <li> <a href="{% url 'category' category%}">{{category}}</a></li>
 {%endfor%}
 
 {%endif%}
+
+{%endif%}
+
 {%if items%}
  <h2>Products in {{title}}</h2>
-  {%for item in items%}
-  <li><a href="/home/{{item.title }}">{{ item.title }}{{ item.bid }}</a> </li>
-  {%endfor%}
-  {%else%}
-  Sorry, no products in  {{title}}
-    You can add one <a href="{% url 'create' %}">here</a>
+{% for item in items %}
+
+<div  class="d-flex align-items-center">
+
+
+           <div class="flex-shrink-0" style='padding: 50px;'>
+            {% if item.image %}
+
+            <img src="{{ item.image }}" class="img" style="width: 250px; height: 250px"  >
+            {% else %}
+                <img src="{% static 'images/No-image-available.png' %}" style="width: 250px; height: 250px" class="img">
+            {% endif %}
+            </div>
+             <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+            <a href="/home/{{ item }}" class="align-self-start" style="color:black;"> <strong>{{ item.title }} </strong></a>
+
+             </div>
+     <div class="flex-grow-1 ms-3">
+         Current Bid ${{ item.bid }}
+
+             </div>
+<div class="flex-grow-1 ms-3">
+            {{ item.description }}
+
+             </div>
+
+
+
+
+
+
+
+</div>
+
+     {% endfor %}
+
+    {%else%}
+  </br>
+    You can add product <a href="{% url 'create' %}">here</a>
   {%endif%}
 
-
-
-
+</div>
 {% endblock %}
 
 

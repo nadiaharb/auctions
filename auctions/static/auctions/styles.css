@@ -1,3 +1,32 @@
 body {
     padding: 10px;
 }
+#title {
+    text-align: center;
+    font-size: 80px;
+    color: grey;
+}
+.head {
+    text-align: center;
+    color: black;
+}
+.items {
+    margin-top: 50px;
+    line-height: 200px;
+}
+.img {
+    height: 250px;
+    width: 250px;
+}
+.products {
+    display: inline;
+    padding: 80px;
+}
+.btn {
+background-color: blue;
+color:white;
+}
+.img1 {
+    height: 350px;
+    width: 350px;
+}

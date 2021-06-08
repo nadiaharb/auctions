@@ -68,6 +68,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+@login_required
 def create(request):
     form = CreateNewListing()
     if request.method == 'POST':
@@ -83,7 +84,7 @@ def create(request):
             NewListing.objects.create(title=title, description=description, bid=bid, image=image, category=category,
                                       created_by=created_by)
 
-            return HttpResponseRedirect(reverse("entry", kwargs={'title':title}))
+            return HttpResponseRedirect(reverse("entry", kwargs={'title': title}))
 
 
     else:
@@ -92,22 +93,27 @@ def create(request):
 
 def activelistings(request):
     products = NewListing.objects.filter(openbid=True)
+    max = {}
 
+    for product in products:
+        bids = Bid.objects.filter(title=product)
+        max_bid = bids.aggregate(Max('bidValue'))['bidValue__max']
+        max[product.title] = max_bid
 
-    return render(request, 'auctions/activelistings.html', {'products': products})
+    return render(request, 'auctions/activelistings.html', {'products': products, 'max_bid': max_bid, 'bids': bids, 'max':max})
 
 
 def entry(request, title):
     item = NewListing.objects.get(title=title)
     bids = Bid.objects.filter(title=item)
-    current_user=request.user.username
+    current_user = request.user.username
     comm = Comment.objects.filter(title=item)
     max_bid = bids.aggregate(Max('bidValue'))['bidValue__max']
-    maxuser=Bid.objects.filter(bidValue=max_bid)
+    maxuser = Bid.objects.filter(bidValue=max_bid)
     if item.openbid is False:
         messages.success(
-            request, f'Auction for {item} closed!')
-        if str(current_user)== str(maxuser[0]):
+            request, f'Auction for {item} is closed!')
+        if str(current_user) == str(maxuser[0]):
             messages.success(
                 request, f'YOU ARE THE WINNER!!!')
             return render(request, 'auctions/entry.html', {
@@ -128,18 +134,14 @@ def entry(request, title):
                 'current_user': current_user
             })
 
-
-
     return render(request, 'auctions/entry.html', {
         'item': item,
         'comm': comm,
         'bids': bids,
         'max_bid': max_bid,
 
-         'current_user':current_user
+        'current_user': current_user
     })
-
-
 
 @login_required
 def watchlist(request):
@@ -157,48 +159,28 @@ def watchlist(request):
 
 @login_required
 def add(request, title):
+    user = request.user.id
+    username = request.user.username
+    watchlist, created = Watchlist.objects.get_or_create(user_id=user)
 
-    user = get_object_or_404(User, username=request.user.username)
     item = NewListing.objects.get(title=title)
-    wl = Watchlist.objects.get(user=user)
-    myl = WatchlistItem.objects.filter(watchlist=wl)
+
+    myl = WatchlistItem.objects.filter(watchlist=watchlist)
     for i in myl:
-        if str(item) == str(i.product.title):
-            return HttpResponse('exist')
+        if str(item) == str(i.product):
+            messages.error(request, 'The item already in your watchlist!')
+            return HttpResponseRedirect(reverse('entry', kwargs={'title': title, }))
     else:
-        wo = WatchlistItem.objects.create(product=item, watchlist=wl)
+        wo = WatchlistItem.objects.create(product=item, watchlist=watchlist)
 
         wo.save()
-        watchlist, created = Watchlist.objects.get_or_create(user=user)
 
         items = watchlist.watchlistitem_set.all()
         username = request.user.username
         context = {'items': items, 'username': username, 'watchlist': watchlist}
 
-        return render(request, 'auctions/watchlist.html', context
-                      )
+        return render(request, 'auctions/watchlist.html', context)
 
-
-@login_required()
-def edit(request, title):
-    item = NewListing.objects.get(title=title)
-    form = CreateNewListing(instance=item)
-    form.fields['title'].widget = forms.HiddenInput()
-
-    form.fields['category'].widget = forms.HiddenInput()
-    if request.method == 'POST':
-        form = CreateNewListing(request.POST, instance=item)
-
-        if form.is_valid():
-            old = NewListing.objects.filter(title=title)
-
-            form.save()
-            products = NewListing.objects.all()
-            return HttpResponseRedirect(reverse("entry", kwargs={'title':title}))
-
-    context = {'form': form, 'title': title, 'item': item}
-    return render(request, 'auctions/edit.html', context
-                  )
 
 
 @login_required
@@ -208,7 +190,7 @@ def remove(request, title):
     wl = Watchlist.objects.get(user=user)
     myl = WatchlistItem.objects.all()
     for i in myl:
-        if str(item) == str(i.product.title):
+        if str(item) == str(i.product):
             WatchlistItem.objects.filter(product=item).delete()
             watchlist, created = Watchlist.objects.get_or_create(user=user)
             items = watchlist.watchlistitem_set.all()
@@ -233,9 +215,10 @@ def addcomment(request, title):
             body = form.cleaned_data['body']
             Comment.objects.create(title=title, body=body, username=username)
             messages.success(request, 'The comment is added!')
-            return HttpResponseRedirect(reverse('entry', kwargs={'title':title, }))
+            return HttpResponseRedirect(reverse('entry', kwargs={'title': title, }))
     else:
         return render(request, "auctions/comment.html", {'form': form, 'title': title})
+
 
 @login_required
 def bid(request, title):
@@ -260,46 +243,43 @@ def bid(request, title):
                     Bid.objects.create(title=title, bidValue=bidValue, user=user)
                     messages.success(request, 'The bid is added!')
 
-
-                    return HttpResponseRedirect(reverse('entry', kwargs={"title":title}))
+                    return HttpResponseRedirect(reverse('entry', kwargs={"title": title, }))
 
             else:
                 max_bid = bids.aggregate(Max('bidValue'))['bidValue__max']
 
                 if bidValue <= max_bid:
                     messages.error(request, 'The bid is too low!')
-                    return render(request, 'auctions/bid.html', {'user': user, 'title': title, 'form': form,})
+                    return render(request, 'auctions/bid.html', {'user': user, 'title': title, 'form': form, })
                 else:
                     Bid.objects.create(title=title, bidValue=bidValue, user=user)
                     messages.success(request, 'The bid is added!')
-                    return HttpResponseRedirect(reverse('entry', kwargs={"title":title}))
+                    return HttpResponseRedirect(reverse('entry', kwargs={"title": title}))
     else:
 
+        return render(request, 'auctions/bid.html', {'user': user, 'title': title, 'form': form, })
 
-         return render(request, 'auctions/bid.html', {'user': user, 'title': title, 'form': form,})
 
 @login_required
 def close_bid(request, title):
-    item=NewListing.objects.get(title=title)
-    if item.openbid==True:
-        item.openbid=False
+    item = NewListing.objects.get(title=title)
+    if item.openbid == True:
+        item.openbid = False
         item.save()
 
-        return HttpResponseRedirect(reverse('entry', kwargs={'title':title, }))
+        return HttpResponseRedirect(reverse('entry', kwargs={'title': title, }))
 
 
 def categories(request):
-    categories=Category.objects.all()
+    categories = Category.objects.all()
 
+    return render(request, 'auctions/categories.html', {'categories': categories})
 
-    return render(request, 'auctions/categories.html', {  'categories':categories})
 
 def category(request, title):
+    items = NewListing.objects.filter(category=title, openbid=True)
 
-    items=NewListing.objects.filter(category=title, openbid=True)
+    return render(request, 'auctions/categories.html', {'items': items, 'title': title})
 
-    return render(request, 'auctions/categories.html', {  'items':items, 'title':title})
 
-def test(request):
-    messages='YOU WINNER'
-    HttpResponseRedirect(reverse('test', kwargs={'messages':messages}))
+

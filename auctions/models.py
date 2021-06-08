@@ -26,7 +26,7 @@ class User(AbstractUser):
 class NewListing(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    bid = models.DecimalField(max_digits=4, decimal_places=2)
+    bid = models.DecimalField('Starting Bid $',max_digits=4, decimal_places=2, )
 
     category = models.CharField(max_length=200, choices=my_categories)
     image = models.URLField(blank=True, null=True)
@@ -73,13 +73,13 @@ class WatchlistItem(models.Model):
     quantity=models.IntegerField(default=1, null=True, blank=True)
 
     def __str__(self):
-        return self.product.title
+        return str(self.product)
 
 
 class Comment(models.Model):
     title=models.ForeignKey(NewListing, related_name='comments', on_delete=models.CASCADE, editable=False)
     username=models.ForeignKey(User, on_delete=models.CASCADE, editable=False)
-    body=models.TextField()
+    body=models.TextField('', max_length=2000)
     date_added=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -99,7 +99,7 @@ class Auction(models.Model):
 class Bid(models.Model):
     title = models.ForeignKey(NewListing, on_delete=models.CASCADE, related_name='product',editable=False)
     user=models.ForeignKey(User, on_delete=models.CASCADE, editable=False)
-    bidValue=models.DecimalField(decimal_places=2, max_digits=7)
+    bidValue=models.DecimalField('Bid $',decimal_places=2, max_digits=7)
     bid_time=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

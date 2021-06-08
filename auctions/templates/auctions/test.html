@@ -1,16 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>test</title>
-</head>
-<body>
-{% if messages %}
 
-    <strong>{{messages}}</strong>
+{% extends "auctions/layout.html" %}
+{% load static %}
 
-    {% else %}
-    <h1>NO MESSAGES</h1>
-{% endif %}
-</body>
-</html>
+{% block title %}
+   Active Listings
+{% endblock %}
+
+
+
+{% block body %}
+
+  {% for product in products %}
+
+<div class="d-flex align-items-center" xmlns="http://www.w3.org/1999/html">
+
+
+           <div class="flex-shrink-0" style='padding: 50px;'>
+            {% if product.image %}
+
+            <img src="{{ product.image }}" class="img" style="width: 250px; height: 250px"  >
+            {% else %}
+                <img src="{% static 'images/No-image-available.png' %}" style="width: 250px; height: 250px" class="img">
+            {% endif %}
+            </div>
+             <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+            <a href="/home/{{ product }}" class="align-self-start" style="color:black;"> <strong>{{ product.title }} </strong></a>
+
+             </div>
+     <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+
+
+         {%for key, value in max.items%}
+         {%if key == product.title%}
+            <h5>Current bid:  ${{value}}</h5>
+         {%endif%}
+         {%endfor%}
+
+
+             </div>
+<div class="flex-grow-1 ms-3"style="padding-left: 30px;">
+            <strong>Description:</strong>{{ product.description }}
+
+             </div>
+
+
+
+
+
+
+
+</div>
+
+     {% endfor %}
+</div>
+
+    </br></br>
+
+{% endblock %}

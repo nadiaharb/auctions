@@ -16,6 +16,7 @@ class CreateNewListing(ModelForm):
             'description': forms.Textarea(
                 attrs={'class': "form-control", 'placeholder': 'Type the description here...'}),
 
+
         }
 
 
@@ -24,11 +25,19 @@ class AddComment(ModelForm):
         model = Comment
         fields = ('__all__')
 
+        widgets = {
+            'body': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Type the comment here...'}),
+
+        }
+
 
 class AddBid(ModelForm):
     class Meta:
         model = Bid
         fields = ('__all__')
+
+
+
 
 
 class CloseBid(ModelForm):

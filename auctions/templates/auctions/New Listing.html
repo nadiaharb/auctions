@@ -8,12 +8,12 @@
 
 
 {% block body %}
-<h1>You Can Create New Listing Here</h1>
-    <div>
-    <form method="post" enctype="multipart/form-data" action="{% url 'create' %}" name="q" style="width: 75%" >
+<h1 class="head" style="text-align:center;color: black">List an item</h1>
+    <div >
+    <form method="post" enctype="multipart/form-data" action="{% url 'create' %}" name="q" style="width: 75%; margin-top:50px;" >
     {% csrf_token %}
       {{ form.as_p }}
-    <button type="submit" class="btn btn-primary" name="save">Create Listing</button>
+    <button type="submit"   class="btn btn-primary" name="save">Create Listing</button>
     </form>
     </div>
 

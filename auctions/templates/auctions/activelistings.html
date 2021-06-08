@@ -9,26 +9,54 @@
 
 
 {% block body %}
-<h1>Active Listings</h1>
+<div class="head" style="text-align: center; color: #111820; font-family: Arial,sans-serif;font-size: 60px;">All Listings</div>
+
     {% for product in products %}
-        <li>
 
+<div  class="d-flex align-items-center">
+
+
+           <div class="flex-shrink-0" style='padding: 50px;'>
             {% if product.image %}
-            <img src="{{ product.image }}" style="width: 150px; height: 150px">
+
+            <img src="{{ product.image }}" class="img" style="width: 250px; height: 250px"  >
             {% else %}
-                <img src="{% static 'images/No-image-available.png' %}" style="width: 150px; height: 150px">
+                <img src="{% static 'images/No-image-available.png' %}" style="width: 250px; height: 250px" class="img">
             {% endif %}
-            <a href="/home/{{ product }}">{{ product.title }} €{{ max_bid }}{{ product.description }}</a>
+            </div>
+             <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+            <a href="/home/{{ product }}" class="align-self-start" style="color:black;"> <strong>{{ product.title }} </strong></a>
+
+             </div>
+     <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+            {%for key, value in max.items%}
+         {%if key == product.title%}
+           {%if value is not None%}
+            <h5>Current bid:  ${{value}}</h5>
+         {%else%}
+         <h5>Starting bid: ${{product.bid}}</h5>
+         {%endif%}
+         {%endif%}
+         {%endfor%}
+
+
+             </div>
+<div class="flex-grow-1 ms-3"style="padding-left: 30px;">
+            <strong>Description:</strong>{{ product.description }}
+
+             </div>
 
 
 
-        </li>
 
+
+
+
+</div>
 
      {% endfor %}
+</div>
+
     </br></br>
-    <h3><a href="{% url 'categories' %}">Choose by category</a></h3>
+
 {% endblock %}
-
-
-

@@ -1,14 +1,46 @@
 {% extends "auctions/layout.html" %}
-
+{%load static%}
 {% block title %}
     Watchlist
 {% endblock %}
 
 {% block body %}
 
-    <h1>this is watchlist {{ username }}</h1>
+    <h1 class="head" style="text-align: center; color:black;"> {{ username }}, this is your watchlist!  </h1><hr>
+
+
+
+
+
     {% for item in items %}
-        <li><a href="/home/{{ item.product.title }}">{{ item.product.title }}{{ item.product.image }}{{ item.product.bid }}</a> </li><button value="submit"><a href="/remove/{{item}}"> Remove</a></button>
-    {% endfor %}
-    <span>You have {{ watchlist.get_items }} products in your watchlist</span>
+
+<div  class="d-flex align-items-center">
+
+
+           <div class="flex-shrink-0" style='padding: 50px;'>
+            {% if item.product.image %}
+
+            <img src="{{ item.product.image }}" class="img" style="width: 250px; height: 250px"  >
+            {% else %}
+                <img src="{% static 'images/No-image-available.png' %}" style="width: 250px; height: 250px" class="img">
+            {% endif %}
+            </div>
+             <div class="flex-grow-1 ms-3" style="padding-left: 30px;">
+            <a href="/home/{{ item.product.title }}" class="align-self-start" style="color:black;"> <strong>{{ item.product.title }} </strong></a>
+
+             </div>
+     <div class="flex-grow-1 ms-3">
+         Current Bid: ${{ item.product.bid }}
+
+             </div>
+<div class="flex-grow-1 ms-3">
+            {{ item.product.description }}
+
+             </div>
+    </div>
+<button value="submit" class="btn" style="background-color: blue; color:white;"><a href="/remove/{{item}}"> Remove</a></button>
+
+     {% endfor %}
+<hr>
+<span>You have {{ watchlist.get_items }} products in your watchlist</span>
 {% endblock %}
